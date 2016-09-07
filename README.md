@@ -19,6 +19,10 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
+#  id         :integer          not null, primary key
+#  created_at :datetime
+#  updated_at :datetime
+
 class Search < ApplicationRecord
   include NestedAttributesSerializer
 
@@ -29,6 +33,12 @@ end
 ```
 
 ```ruby
+#  id         :integer          not null, primary key
+#  query      :string
+#  search_id  :integer
+#  created_at :datetime
+#  updated_at :datetime
+
 class Query < ApplicationRecord
   belongs_to :search
 end
