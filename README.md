@@ -1,9 +1,5 @@
 # NestedAttributesSerializer
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/nested_attributes_serializer`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -22,7 +18,47 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+class Search < ApplicationRecord
+  include NestedAttributesSerializer
+
+  has_many :queries
+
+  accepts_nested_attributes_for :queries
+end
+```
+
+```ruby
+class Query < ApplicationRecord
+  belongs_to :search
+end
+```
+
+```ruby
+search = Search.new(queries_attributes: [{query: "foo"}, {query: "bar"}])
+search.queries
+# [
+#   #<Query:0x000000043e02e8 id: nil, query: "foo", created_at: nil, updated_at: nil, search_id: nil>,
+#   #<Query:0x000000043cdd00 id: nil, query: "bar", created_at: nil, updated_at: nil, search_id: nil>
+# ]
+
+serialized_search = search.to_nested_attributes(include: :queries)
+# {
+#   "id"=>nil, "created_at"=>nil, "updated_at"=>nil,
+#   "queries_attributes"=>[
+#     {"id"=>nil, "query"=>"foo", "created_at"=>nil, "updated_at"=>nil, "search_id"=>nil},
+#     {"id"=>nil, "query"=>"bar", "created_at"=>nil, "updated_at"=>nil, "search_id"=>nil}
+#   ]
+# }
+
+deserialized_search = Search.new(serialized_search)
+deserialized_search.queries
+
+# [
+#   #<Query:0x00000003c59ee8 id: nil, query: "foo", created_at: nil, updated_at: nil, search_id: nil>,
+#   #<Query:0x00000003c3f5e8 id: nil, query: "bar", created_at: nil, updated_at: nil, search_id: nil>
+# ]
+```
 
 ## Development
 
@@ -32,10 +68,8 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/nested_attributes_serializer.
-
+Bug reports and pull requests are welcome on GitHub at https://github.com/msievers/nested_attributes_serializer.
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
